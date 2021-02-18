@@ -22,16 +22,16 @@ An interactive registration form for a conference.
 Form uses live checks on specific fields for validation
 i.e. Name field helper function
 
-`// add live validation helper for name input field//
+```// add live validation helper for name input field//
 
 getName.addEventListener('keyup', () => {
     nameValidate();
-});`
+});```
 
 including additional error message hinting on validation attempt 
 i.e. Name field hints after name field input validation with regex 
 
-`//use nameRegex to test name input validation//
+```//use nameRegex to test name input validation//
 
 const nameValidate = function () {
     let nameRegex = /^(\s+)?[A-Z]+(\s+)?((\w+)?(\s)?)+?$/i;
@@ -49,7 +49,7 @@ const nameValidate = function () {
         formFieldsCSSvalidNotCreditCard(getName);
     }
 
-};`
+};```
 
 --------------------------------------------------
 
@@ -58,7 +58,7 @@ const nameValidate = function () {
 Form uses multi-stage final validation on form 'submit', preventing default submit function until all fields confirmed as valid - and only calls credit card validation if credit card is selected payment method
 i.e.
 
-`// Form listener calls formfield helper functions//
+```// Form listener calls formfield helper functions//
 
 getForm.addEventListener('submit', e => {
     /* if any formfield is invalid (formValidity not true), the function prevents default submit functionality*/
@@ -83,4 +83,4 @@ getForm.addEventListener('submit', e => {
         creditCardValidate();
         preventDefault();
     }
-});`
+});```
