@@ -216,11 +216,7 @@ getActivitiesSelection.addEventListener('change', e => {
 //..................................................*/
 
 // enable/disable appropriate payment methods as called by user
-getPaymentSelection.addEventListener('change', e => {
-    //reset validity warning if payment method changed
-    let novalid = getForm.querySelector(".payment-methods");
-    novalid.classList.remove("not-valid");
-    novalid.classList.add("valid");
+getPaymentSelection.addEventListener('change', e => {   
     // set visibility of payment sections
     if (e.target.value === "credit-card") {
         setDefaultPayment();
@@ -286,7 +282,7 @@ const nameValidate = function () {
     if (nameHintRegex.test(getName.value)) {
         formFieldsCSSinvalidNotCreditCard(getName);
         document.getElementById('name-hint').textContent = "Name field cannot contain a number";
-    // name validation check
+        // name validation check
     } else if (!nameRegex.test(getName.value)) {
         formFieldsCSSinvalidNotCreditCard(getName);
         document.getElementById('name-hint').textContent = "Name field cannot be blank";
@@ -330,15 +326,17 @@ const creditCardValidate = function () {
     let getCVVNumber = document.getElementById('cvv');
     // adapt css to indicate valid/invalid fields
     const cssManipulationInvalidCC = function (element) {
-        creditCardSelection.parentNode.classList.add("not-valid");
-        creditCardSelection.parentNode.classList.remove("valid");
+        
+        element.parentNode.classList.add("not-valid");
+        element.parentNode.classList.remove("valid");
         element.nextElementSibling.style.display = "inherit";
-        creditCardSelection.parentNode.scrollIntoView();
+        element.parentNode.scrollIntoView();
         formValidity = false;
     };
     const cssManipulationValidCC = function (element) {
-        creditCardSelection.parentNode.classList.remove("not-valid");
-        creditCardSelection.parentNode.classList.add("valid");
+       
+        element.parentNode.classList.remove("not-valid");
+        element.parentNode.classList.add("valid");
         element.nextElementSibling.style.display = "none";
         formValidity = true;
     };
@@ -349,8 +347,9 @@ const creditCardValidate = function () {
             cssManipulationInvalidCC(getZipNumber);
         } else {
             cssManipulationValidCC(getZipNumber);
-            checkCVVNumber();
+
         }
+        checkCVVNumber();
     };
     const checkCVVNumber = function () {
         if (!cvvNumberRegex.test(getCVVNumber.value)) {
@@ -365,8 +364,9 @@ const creditCardValidate = function () {
         cssManipulationInvalidCC(getCardNumber);
     } else {
         cssManipulationValidCC(getCardNumber);
-        checkZipNumber();
+
     }
+    checkZipNumber();
     return formValidity;
 };
 
