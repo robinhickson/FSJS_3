@@ -25,7 +25,7 @@ let activitiesTotalCost = 0;
 let activityTracker = 0;
 //overall form validity flag
 let formValidity = false;
-//credit card selection tracker - true if cc selected, false if another payment option
+//credit card selection tracker - true if cc selected (default), false if another payment option
 let creditCardValidationReq = true;
 
 /*-----------------------*/
@@ -204,7 +204,7 @@ getActivitiesSelection.addEventListener('change', e => {
         activitiesTotalCost -= parseInt(e.target.dataset.cost);
         activityTracker -= 1;
     }
-    //check activities selection validity (semi-live functionality in case of selection/deselection)
+    //validate changes
     activitiesValidate();
     //paint accumulated cost to display   
     getActivitiesTotalCost.textContent = `Total: $${ activitiesTotalCost}`;
@@ -238,7 +238,7 @@ getPaymentSelection.addEventListener('change', e => {
         bitcoinSelection.style.display = "inherit";
         creditCardValidationReq = false;
     }
-   
+
 });
 
 /*--------------------------------------------------//
@@ -280,11 +280,17 @@ const formFieldsCSSvalidNotCreditCard = function (element) {
 
 //use nameRegex to test name input validation
 const nameValidate = function () {
-    let nameRegex = /^(\s+)?\w+(\s+)?((\w+)?(\s)?)+?$/i;
-
-    if (!nameRegex.test(getName.value)) {
+    let nameRegex = /^(\s+)?[A-Z]+(\s+)?((\w+)?(\s)?)+?$/i;
+    let nameHintRegex = /\d/;
+    // additional hint to exclude numbers in name field
+    if (nameHintRegex.test(getName.value)) {
         formFieldsCSSinvalidNotCreditCard(getName);
-        getName.focus();
+        document.getElementById('name-hint').textContent = "Name field cannot contain a number";
+    // name validation check
+    } else if (!nameRegex.test(getName.value)) {
+        formFieldsCSSinvalidNotCreditCard(getName);
+        document.getElementById('name-hint').textContent = "Name field cannot be blank";
+
     } else {
         formFieldsCSSvalidNotCreditCard(getName);
     }
@@ -293,11 +299,10 @@ const nameValidate = function () {
 
 //use emailRegex to test email input validation
 const emailValidate = function () {
-    let emailRegex = /^(\w+)@(\w+).com$/i;
+    let emailRegex = /^(\w+)@([A-Z]+).com$/i;
 
     if (!emailRegex.test(getEmail.value)) {
         formFieldsCSSinvalidNotCreditCard(getEmail);
-        getEmail.focus();
     } else {
         formFieldsCSSvalidNotCreditCard(getEmail);
     }
@@ -305,7 +310,7 @@ const emailValidate = function () {
 
 // check at least 1 activity selected
 const activitiesValidate = function () {
-    if (activityTracker <1) {
+    if (activityTracker === 0) {
         formFieldsCSSinvalidNotCreditCard(activitiesBox);
     } else {
         formFieldsCSSvalidNotCreditCard(activitiesBox);
@@ -355,10 +360,10 @@ const creditCardValidate = function () {
         }
     };
 
-    //validate credit card number
+    //validate credit card number (then call check zip and check cvv)
     if (!cardNumberRegex.test(getCardNumber.value)) {
         cssManipulationInvalidCC(getCardNumber);
-    } else  {
+    } else {
         cssManipulationValidCC(getCardNumber);
         checkZipNumber();
     }
@@ -373,7 +378,7 @@ const creditCardValidate = function () {
 getName.addEventListener('keyup', () => {
     nameValidate();
 });
-//add blur validation for email input field (helps to ensure email field completion prioritised)
+//add blur validation for email input field 
 getEmail.addEventListener('blur', () => {
     emailValidate();
 });
@@ -394,23 +399,20 @@ getForm.addEventListener('submit', e => {
             e.preventDefault();
         }
     };
-
-    nameValidate();
+    activitiesValidate();
     preventDefault();
 
     emailValidate();
     preventDefault();
 
-    activitiesValidate();
+    nameValidate();
     preventDefault();
 
-//ensure credit card validation only if credit card is selected payment method, using creditCardValidationReq flag (true = validation required, false = no validation required)
-    if(creditCardValidationReq){
+    //ensure credit card validation only if credit card is selected payment method, using creditCardValidationReq flag (true = validation required, false = no validation required)
+    if (creditCardValidationReq) {
         creditCardValidate();
         preventDefault();
     }
-   
-
 });
 
 ////END CODE
