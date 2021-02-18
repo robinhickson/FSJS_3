@@ -36,11 +36,11 @@ i.e. Name field hints after name field input validation with regex
 const nameValidate = function () {
     let nameRegex = /^(\s+)?[A-Z]+(\s+)?((\w+)?(\s)?)+?$/i;
     let nameHintRegex = /\d/;
-    // additional hint to exclude numbers in name field//
+    /* additional hint to exclude numbers in name field*/
     if (nameHintRegex.test(getName.value)) {
         formFieldsCSSinvalidNotCreditCard(getName);
         document.getElementById('name-hint').textContent = "Name field cannot contain a number";
-    // name validation check//
+    /* name validation check*/
     } else if (!nameRegex.test(getName.value)) {
         formFieldsCSSinvalidNotCreditCard(getName);
         document.getElementById('name-hint').textContent = "Name field cannot be blank";
@@ -61,7 +61,7 @@ i.e.
 `// Form listener calls formfield helper functions//
 
 getForm.addEventListener('submit', e => {
-    // if any formfield is invalid (formValidity not true), the function prevents default submit functionality//
+    /* if any formfield is invalid (formValidity not true), the function prevents default submit functionality*/
 
     const preventDefault = function () {
         if (formValidity === false) {
@@ -77,7 +77,7 @@ getForm.addEventListener('submit', e => {
     nameValidate();
     preventDefault();
 
-    //ensure credit card validation only if credit card is selected payment method, using creditCardValidationReq flag (true = validation required, false = no validation required)//
+    /*ensure credit card validation only if credit card is selected payment method, using creditCardValidationReq flag (true = validation required, false = no validation required)*/
 
     if (creditCardValidationReq) {
         creditCardValidate();
