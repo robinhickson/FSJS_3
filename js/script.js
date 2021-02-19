@@ -90,7 +90,7 @@ getDesignSelection.addEventListener('change', e => {
 
     //reset options fields for each selection change   
 
-    let colorOptionsArray = Array.from(getColorSelection.options);
+    const colorOptionsArray = Array.from(getColorSelection.options);
     colorOptionsArray.forEach(option => {
         option.disabled = false;
         option.hidden = false;
@@ -184,7 +184,7 @@ const compareTimes = function (selected, activity, regex) {
 const checkConflict = function (activity) {
     let selectedActivityTime = activity.dataset.dayAndTime;
     if (selectedActivityTime) {
-        let regexTime = /^(\w+)\s(\d+)(\w+)\-(\d+)(\w+)$/i;
+        const regexTime = /^(\w+)\s(\d+)(\w+)\-(\d+)(\w+)$/i;
         let selectedActivityTimeConverted = convertTime24(selectedActivityTime, regexTime);
         //call the compareTimes function to check for activity overlap
         compareTimes(selectedActivityTimeConverted, activity, regexTime);
@@ -216,7 +216,7 @@ getActivitiesSelection.addEventListener('change', e => {
 //..................................................*/
 
 // enable/disable appropriate payment methods as called by user
-getPaymentSelection.addEventListener('change', e => {   
+getPaymentSelection.addEventListener('change', e => {
     // set visibility of payment sections
     if (e.target.value === "credit-card") {
         setDefaultPayment();
@@ -276,27 +276,19 @@ const formFieldsCSSvalidNotCreditCard = function (element) {
 
 //use nameRegex to test name input validation
 const nameValidate = function () {
-    let nameRegex = /^(\s+)?[A-Z]+(\s+)?((\w+)?(\s)?)+?$/i;
-    let nameHintRegex = /\d/;
-    // additional hint to exclude numbers in name field
-    if (nameHintRegex.test(getName.value)) {
-        formFieldsCSSinvalidNotCreditCard(getName);
-        document.getElementById('name-hint').textContent = "Name field cannot contain a number";
-        // name validation check
-    } else if (!nameRegex.test(getName.value)) {
+    const nameRegex = /^(\s+)?[A-Z]+(\s+)?((\w+)?(\s)?)+?$/i;
+    // name validation check
+    if (!nameRegex.test(getName.value)) {
         formFieldsCSSinvalidNotCreditCard(getName);
         document.getElementById('name-hint').textContent = "Name field cannot be blank";
-
     } else {
         formFieldsCSSvalidNotCreditCard(getName);
     }
-
 };
 
 //use emailRegex to test email input validation
 const emailValidate = function () {
-    let emailRegex = /^(\w+)@([A-Z]+).com$/i;
-
+    const emailRegex = /^(\w+)@([A-Z]+).com$/i;
     if (!emailRegex.test(getEmail.value)) {
         formFieldsCSSinvalidNotCreditCard(getEmail);
     } else {
@@ -318,56 +310,68 @@ const activitiesValidate = function () {
 const creditCardValidate = function () {
     formValidity = false; //false until proven true - catches late cc field changes after fields previously validated
     //use cardNumberRegex (13-16 digits), zipNumberRegex(5 digits) and cvvNumberRegex (3 digits) to test credit card fields input validation - only if credit card is selected payment method (controlled by creditCardValidationReq flag)
-    let cardNumberRegex = /^\d{13,16}$/;
-    let zipNumberRegex = /^\d{5,5}$/;
-    let cvvNumberRegex = /^\d{3,3}$/;
-    let getCardNumber = document.getElementById('cc-num');
-    let getZipNumber = document.getElementById('zip');
-    let getCVVNumber = document.getElementById('cvv');
+    const cardNumberRegex = /^\d{13,16}$/;
+    const zipNumberRegex = /^\d{5,5}$/;
+    const cvvNumberRegex = /^\d{3,3}$/;
+    const cardNumberHintRegex = /\s|\-/;
+    const getCardNumber = document.getElementById('cc-num');
+    const getZipNumber = document.getElementById('zip');
+    const getCVVNumber = document.getElementById('cvv');
+    let cvvValidity = false;
+    let creditCardValidity = false;
+    let zipValidity = false;
+
     // adapt css to indicate valid/invalid fields
     const cssManipulationInvalidCC = function (element) {
-        
         element.parentNode.classList.add("not-valid");
         element.parentNode.classList.remove("valid");
         element.nextElementSibling.style.display = "inherit";
         element.parentNode.scrollIntoView();
-        formValidity = false;
     };
     const cssManipulationValidCC = function (element) {
-       
         element.parentNode.classList.remove("not-valid");
         element.parentNode.classList.add("valid");
         element.nextElementSibling.style.display = "none";
-        formValidity = true;
     };
 
-    // test credit card, zip and cvv numbers sequentially
-    const checkZipNumber = function () {
+    // test zip, cvv and credit card numbers
+    (function () {
         if (!zipNumberRegex.test(getZipNumber.value)) {
             cssManipulationInvalidCC(getZipNumber);
         } else {
             cssManipulationValidCC(getZipNumber);
-
+            zipValidity = true;
         }
-        checkCVVNumber();
-    };
-    const checkCVVNumber = function () {
+
+    })();
+
+    (function () {
         if (!cvvNumberRegex.test(getCVVNumber.value)) {
             cssManipulationInvalidCC(getCVVNumber);
         } else {
             cssManipulationValidCC(getCVVNumber);
+            cvvValidity = true;
         }
-    };
+    })();
 
-    //validate credit card number (then call check zip and check cvv)
-    if (!cardNumberRegex.test(getCardNumber.value)) {
-        cssManipulationInvalidCC(getCardNumber);
-    } else {
-        cssManipulationValidCC(getCardNumber);
+    (function () {
+        // additional hint to exclude numbers in name field
+        if (cardNumberHintRegex.test(getCardNumber.value)) {
+            cssManipulationInvalidCC(getCardNumber);
+            document.getElementById('cc-hint').textContent = "Numbers only - spaces and/or dashes not required";
+        } else if (!cardNumberRegex.test(getCardNumber.value)) {
+            cssManipulationInvalidCC(getCardNumber);
+            document.getElementById('cc-hint').textContent = "Credit card number must be between 13 - 16 digits";
+        } else {
+            cssManipulationValidCC(getCardNumber);
+            creditCardValidity = true;
+        }
+    })();
 
+    //Ensure all 3 fields are valid at the same time
+    if (zipValidity && cvvValidity && creditCardValidity) {
+        formValidity = true;
     }
-    checkZipNumber();
-    return formValidity;
 };
 
 /*--------------------------------------------------//
