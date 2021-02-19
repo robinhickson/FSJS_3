@@ -355,7 +355,7 @@ const creditCardValidate = function () {
     })();
 
     (function () {
-        // additional hint to exclude numbers in name field
+        // additional hint to exclude spaces or dashes in cc number field
         if (cardNumberHintRegex.test(getCardNumber.value)) {
             cssManipulationInvalidCC(getCardNumber);
             document.getElementById('cc-hint').textContent = "Numbers only - spaces and/or dashes not required";
@@ -368,7 +368,7 @@ const creditCardValidate = function () {
         }
     })();
 
-    //Ensure all 3 fields are valid at the same time
+    //Ensure all 3 fields are valid 
     if (zipValidity && cvvValidity && creditCardValidity) {
         formValidity = true;
     }

@@ -20,39 +20,33 @@ An interactive registration form for a conference.
 **FORMFIELD ERROR HANDLING:**
 
 Form uses live checks on specific fields for validation
-i.e. Name field helper function
+i.e. CC fields helper function
 
 ```
-// add live validation helper for name input field//
-
-getName.addEventListener('keyup', () => {
-    nameValidate();
+//add live validation for credit card number, zip code and cvv
+creditCardSelection.addEventListener('keyup', () => {
+    creditCardValidationReq = true;
+    creditCardValidate();
 });
 ```
 
-including additional error message hinting on validation attempt 
-i.e. Name field hints after name field input validation with regex 
+including additional error message-hinting on validation attempt 
+i.e. CC number field hints to user to avoid spaces and dashes, and then checks that cc number is one sequence between 13-16 digits 
 
 ```
-//use nameRegex to test name input validation//
-
-const nameValidate = function () {
-    let nameRegex = /^(\s+)?[A-Z]+(\s+)?((\w+)?(\s)?)+?$/i;
-    let nameHintRegex = /\d/;
-    /* additional hint to exclude numbers in name field*/
-    if (nameHintRegex.test(getName.value)) {
-        formFieldsCSSinvalidNotCreditCard(getName);
-        document.getElementById('name-hint').textContent = "Name field cannot contain a number";
-    /* name validation check*/
-    } else if (!nameRegex.test(getName.value)) {
-        formFieldsCSSinvalidNotCreditCard(getName);
-        document.getElementById('name-hint').textContent = "Name field cannot be blank";
-
-    } else {
-        formFieldsCSSvalidNotCreditCard(getName);
-    }
-
-};
+ (function () {
+        // additional hint to exclude spaces or dashes in cc number field
+        if (cardNumberHintRegex.test(getCardNumber.value)) {
+            cssManipulationInvalidCC(getCardNumber);
+            document.getElementById('cc-hint').textContent = "Numbers only - spaces and/or dashes not required";
+        } else if (!cardNumberRegex.test(getCardNumber.value)) {
+            cssManipulationInvalidCC(getCardNumber);
+            document.getElementById('cc-hint').textContent = "Credit card number must be between 13 - 16 digits";
+        } else {
+            cssManipulationValidCC(getCardNumber);
+            creditCardValidity = true;
+        }
+    })();
 ```
 
 --------------------------------------------------
